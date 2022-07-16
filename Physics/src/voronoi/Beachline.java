@@ -21,7 +21,8 @@ public class Beachline extends RedBlackTree<Diagram.Site> {
 	}
 	public Arc createArc(Diagram.Site site)
 	{
-		return new Arc((Arc) nil, (Arc) nil, (Arc) nil, site, null, null, null, (Arc) nil, (Arc) nil, RedBlackNode.Color.RED);
+//		return new Arc((Arc) nil, (Arc) nil, (Arc) nil, site, null, null, null, (Arc) nil, (Arc) nil, RedBlackNode.Color.RED);
+		return null;
 	}
 	public Arc getLeftMostArc()
 	{

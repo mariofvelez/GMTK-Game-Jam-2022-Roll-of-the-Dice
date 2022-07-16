@@ -33,8 +33,7 @@ public class GJK {
 			s.addVertex(A);
 			
 		}
-		
-		return null;
+
 	}
 
 }

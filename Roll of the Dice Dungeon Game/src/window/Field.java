@@ -175,6 +175,7 @@ public class Field extends Canvas
 			Graphics2D g2 = (Graphics2D) bufferGraphics;
 			
 			curr.debugDraw(g2);
+//			curr.draw(g2);
 
 		} catch (Exception e) {
 			e.printStackTrace();
