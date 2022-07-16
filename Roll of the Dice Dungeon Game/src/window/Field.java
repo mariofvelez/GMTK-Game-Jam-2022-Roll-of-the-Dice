@@ -65,6 +65,10 @@ public class Field extends Canvas
 	GameWorld title_screen; //title screen scene
 	GameWorld game; //game scene
 	
+	Tile[] tiles;
+	Color[] tile_colors; //possible colors for the tiles in order
+	int tile_length = 3; //current number of colors for the level
+	
 	GameObject player;
 	Sprite player_sprite;
 	float player_z = 0;
@@ -89,6 +93,14 @@ public class Field extends Canvas
 		SpriteSheet.loadSpriteSheet("Tiles", "/res/castle_tileset_full.png", 12, 4);
 		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
+		
+		tile_colors = new Color[5];
+		tile_colors[0] = new Color(230, 88, 60);
+		tile_colors[1] = new Color(75, 178, 219);
+		tile_colors[2] = new Color(255, 239, 66);
+		tile_colors[3] = new Color(46, 232, 53);
+		tile_colors[4] = new Color(99, 44, 176);
+		
 		
 		title_screen = new GameWorld();
 		//background, graphics, buttons, graphics, foreground
@@ -118,7 +130,7 @@ public class Field extends Canvas
 		game.setPosition(size.width/2f, size.height/2f);
 		game.setScale(30, -30);
 		
-		createTile(Color.RED, 2, 2);
+		generateTiles(3, -5, -5, 10, 10);
 		
 		player = new GameObject();
 		player.setPosition(5, 5);
@@ -152,14 +164,38 @@ public class Field extends Canvas
 		curr = to_set;
 	}
 	
-	public Tile createTile(Color c, float x, float y)
+	public Tile createTile(Color c, int state, float x, float y)
 	{
-		Tile tile = new Tile(c);
+		Tile tile = new Tile(c, state);
 		tile.setPosition(x, y);
 		tile.setLayer(0);
 		game.addChild(tile);
 		
 		return tile;
+	}
+	/**
+	 * Generates a bunch of tiles
+	 * @param cols - the number of colors
+	 * @param sx - starting position
+	 * @param sy
+	 * @param width - how many tiles wide
+	 * @param height - how many tiles tall
+	 */
+	public void generateTiles(int cols, int sx, int sy, int width, int height)
+	{
+		tiles = new Tile[width * height];
+		Random r = new Random();
+		tile_length = cols;
+		for(int y = 0; y < height; ++y)
+		{
+			for(int x = 0; x < width; ++x)
+			{
+				int rand = r.nextInt(cols);
+				Tile tile = createTile(tile_colors[rand], rand, sx + x, sy + y);
+				tile.setNextColor(tile_colors[(rand+1) % tile_length]);
+				tiles[y*width + x] = tile;
+			}
+		}
 	}
 
 	public void paint(Graphics g) {
@@ -231,19 +267,51 @@ public class Field extends Canvas
 			player_vz = 0.4f;
 			player_z = 0.0001f;
 			
-			Thread thread = new Thread(new Runnable()
+			Thread tile_thread = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					int index = player_index;
+					
+					for(int i = 0; i < index+1; ++i) //change color for each number on the dice roll
+					{
+						for(int j = 0; j < 20; ++j)
+						{
+							for(int k = 0; k < tiles.length; ++k)
+							{
+								tiles[k].setChanging(j / 20f);
+							}
+							
+							Thread.currentThread();
+							try {
+								Thread.sleep(5);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						for(int k = 0; k < tiles.length; ++k)
+						{
+							tiles[k].state = (tiles[k].state+1) % tile_length;
+							tiles[k].setColor(tile_colors[tiles[k].state]);
+							tiles[k].setNextColor(tile_colors[(tiles[k].state+1) % tile_length]);
+						}
+					}
+				}
+			});
+			tile_thread.start();
+			
+			Thread roll_thread = new Thread(new Runnable()
 			{
 				public void run()
 				{
 					Random r = new Random();
-					
-					Thread.currentThread();
 					
 					while(player_z > 0)
 					{
 						player_index = r.nextInt(6);
 						player_sprite.setImage(player_index);
 						
+						Thread.currentThread();
 						try {
 							Thread.sleep(50);
 						} catch (InterruptedException e) {
@@ -252,7 +320,7 @@ public class Field extends Canvas
 					}
 				}
 			});
-			thread.start();
+			roll_thread.start();
 		}
 		
 		player_vz -= 0.03f;
