@@ -32,8 +32,8 @@ public class Clock extends GameObject {
 	@Override
 	public void draw(Graphics2D g2)
 	{
-		float xPos = this.projected.data[2];
-		float yPos = this.projected.data[5];
+		float xPos = this.transform.data[2];
+		float yPos = this.transform.data[5];
 
 		// Draw an arc representing the time left.
 		if(time_left / allotted_time > criticalThreshold) {
@@ -47,8 +47,8 @@ public class Clock extends GameObject {
 	@Override
 	public void debugDraw(Graphics2D g2)
 	{
-		float xPos = this.projected.data[2];
-		float yPos = this.projected.data[5];
+		float xPos = this.transform.data[2];
+		float yPos = this.transform.data[5];
 
 		// Draw an arc representing the time left.
 		if((time_left / allotted_time) > criticalThreshold) {

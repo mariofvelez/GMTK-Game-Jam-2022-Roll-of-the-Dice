@@ -148,7 +148,7 @@ public class Field extends Canvas
 		player.addChild(player_shadow);
 
 		Clock timer = new Clock(5.0f, 30);
-		timer.setPosition(0, 0);
+		timer.setPosition(size.width - 60, 50);
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
 			System.out.println("Time up!");
