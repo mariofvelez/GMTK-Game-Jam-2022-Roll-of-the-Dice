@@ -25,18 +25,18 @@ public class UIButton extends GameObject implements UIElement {
 		projected_bounds = hitbox.createCopy();
 	}
 
-public void setOnClick(Consumer<UIButton> onClick)
+	public void setOnClick(Consumer<UIButton> onClick)
 	{
 		this.onClick = onClick;
 	}
 
 	public void mousePressed(MouseEvent e)
 	{
-//		if(bounds.intersects(new Vec2d(e.getX(), e.getY())))
-//		{
+		if(projected_bounds.intersects(new Vec2d(e.getX(), e.getY())))
+		{
 			if(onClick != null)
 				onClick.accept(this);
-//		}
+		}
 		
 	}
 	public void mouseReleased(MouseEvent e)

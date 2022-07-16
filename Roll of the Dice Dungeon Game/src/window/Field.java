@@ -21,7 +21,10 @@ import geometry.Shape2d;
 import math.Vec2d;
 import ui.UIButton;
 import ui.UIText;
+import util.GameObject;
 import util.GameWorld;
+import util.Sprite;
+import util.SpriteSheet;
 
 /**
  * 
@@ -59,6 +62,11 @@ public class Field extends Canvas
 	GameWorld title_screen; //title screen scene
 	GameWorld game; //game scene
 	
+	GameObject player;
+	Sprite player_sprite;
+	float player_z = 0;
+	float player_vz = 0;
+	
 	public Field(Dimension size) throws Exception {
 		this.setPreferredSize(size);
 		this.addKeyListener(this);
@@ -73,6 +81,10 @@ public class Field extends Canvas
 		refreshTime = (int) (1f/50 * 1000);
 
 		keysDown = new ArrayList<Integer>();
+		
+		SpriteSheet.loadSpriteSheet("Tiles", "/res/castle_tileset_full.png", 12, 4);
+		SpriteSheet.loadSpriteSheet("Player", "/res/player", "priest2_v1_", 4);
+		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
 		
 		title_screen = new GameWorld();
 		//background, graphics, buttons, graphics, foreground
@@ -89,10 +101,34 @@ public class Field extends Canvas
 		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(0, 4), new Vec2d(5, 2));
 		UIButton play_button = new UIButton(play_shape);
 		play_button.setOnClick((e) -> {
-			System.out.println("Play button clicked");
+			setActiveWorld(game);
 		});
 		title_screen.addChild(play_button);
 		title_screen.addUIElement(play_button);
+		
+		
+		//Game scene
+		game = new GameWorld();
+		//background, shadow, player
+		game.setDrawLayers(new int[] {100, 100, 100});
+		game.setPosition(size.width/2f, size.height/2f);
+		game.setScale(30, -30);
+		
+		player = new GameObject();
+		player.setPosition(5, 5);
+		game.addChild(player);
+		
+		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 16);
+		player_sprite.setScale(1, -1);
+		player_sprite.setPosition(-0.5f, 1f);
+		player_sprite.setLayer(2);
+		player.addChild(player_sprite);
+		
+		Sprite player_shadow = new Sprite(SpriteSheet.getSpriteSheet("Shadow"), 0, 16);
+		player_shadow.setScale(1, -1);
+		player_shadow.setPosition(-0.5f, 0.8f);
+		player_shadow.setLayer(1);
+		player.addChild(player_shadow);
 		
 		setActiveWorld(title_screen);
 	}
@@ -161,13 +197,40 @@ public class Field extends Canvas
 
 		Toolkit.getDefaultToolkit().sync();
 	}
-
+	
+	float speed = 0.3f;
 	public void DoLogic() {
+		
+		if(keysDown.contains(KeyEvent.VK_A))
+			player.move(-speed, 0f);
+		if(keysDown.contains(KeyEvent.VK_D))
+			player.move(speed, 0f);
+		if(keysDown.contains(KeyEvent.VK_W))
+			player.move(0f, speed);
+		if(keysDown.contains(KeyEvent.VK_S))
+			player.move(0f, -speed);
+		if(keysDown.contains(KeyEvent.VK_SPACE) && player_z == 0)
+		{
+			//jump, roll dice again
+			player_vz = 0.2f;
+			System.out.println("here");
+		}
+		
+		player_vz -= 0.02f;
+		player_z += player_vz;
+		
+		if(player_z < 0)
+		{
+			player_z = 0;
+			player_vz = 0;
+		}
+		
+		player_sprite.setPosition(-0.5f, 1 + player_z);
 		
 		curr.step();
 		runTime++;
 	}
-
+	
 	public void Draw() // titleScreen
 	{
 		// clears the backbuffer
