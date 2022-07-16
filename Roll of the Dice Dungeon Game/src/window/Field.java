@@ -1,6 +1,7 @@
 package window;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -15,7 +16,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.Random;
 
+import environment.Tile;
 import geometry.Polygon2d;
 import geometry.Shape2d;
 import math.Vec2d;
@@ -66,6 +69,7 @@ public class Field extends Canvas
 	Sprite player_sprite;
 	float player_z = 0;
 	float player_vz = 0;
+	int player_index = 0; //dice roll
 	
 	public Field(Dimension size) throws Exception {
 		this.setPreferredSize(size);
@@ -114,11 +118,13 @@ public class Field extends Canvas
 		game.setPosition(size.width/2f, size.height/2f);
 		game.setScale(30, -30);
 		
+		createTile(Color.RED, 2, 2);
+		
 		player = new GameObject();
 		player.setPosition(5, 5);
 		game.addChild(player);
 		
-		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 16);
+		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 32);
 		player_sprite.setScale(1, -1);
 		player_sprite.setPosition(-0.5f, 1f);
 		player_sprite.setLayer(2);
@@ -144,6 +150,16 @@ public class Field extends Canvas
 		this.addMouseMotionListener(to_set);
 		
 		curr = to_set;
+	}
+	
+	public Tile createTile(Color c, float x, float y)
+	{
+		Tile tile = new Tile(c);
+		tile.setPosition(x, y);
+		tile.setLayer(0);
+		game.addChild(tile);
+		
+		return tile;
 	}
 
 	public void paint(Graphics g) {
@@ -198,7 +214,7 @@ public class Field extends Canvas
 		Toolkit.getDefaultToolkit().sync();
 	}
 	
-	float speed = 0.3f;
+	float speed = 0.2f;
 	public void DoLogic() {
 		
 		if(keysDown.contains(KeyEvent.VK_A))
@@ -212,11 +228,34 @@ public class Field extends Canvas
 		if(keysDown.contains(KeyEvent.VK_SPACE) && player_z == 0)
 		{
 			//jump, roll dice again
-			player_vz = 0.2f;
-			System.out.println("here");
+			player_vz = 0.4f;
+			player_z = 0.0001f;
+			
+			Thread thread = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					Random r = new Random();
+					
+					Thread.currentThread();
+					
+					while(player_z > 0)
+					{
+						player_index = r.nextInt(6);
+						player_sprite.setImage(player_index);
+						
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			thread.start();
 		}
 		
-		player_vz -= 0.02f;
+		player_vz -= 0.03f;
 		player_z += player_vz;
 		
 		if(player_z < 0)

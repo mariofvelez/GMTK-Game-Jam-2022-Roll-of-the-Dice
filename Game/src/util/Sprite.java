@@ -43,6 +43,13 @@ public class Sprite extends GameObject {
 			curr_index = beg_index;
 		curr_img = sprite_sheet.getSprite(curr_index);
 	}
+	public void setImage(int index)
+	{
+		curr_index = index;
+		if(curr_index > end_index)
+			curr_index = end_index;
+		curr_img = sprite_sheet.getSprite(curr_index);
+	}
 	public void debugDraw(Graphics2D g2)
 	{
 		super.debugDraw(g2);
