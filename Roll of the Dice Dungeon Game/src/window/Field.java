@@ -128,7 +128,7 @@ public class Field extends Canvas
 		//background, shadow, player
 		game.setDrawLayers(new int[] {100, 100, 100});
 		game.setPosition(size.width/2f, size.height/2f);
-		game.setScale(30, -30);
+		game.setScale(45, -45);
 		
 		generateTiles(3, -5, -5, 10, 10);
 		
@@ -284,7 +284,7 @@ public class Field extends Canvas
 							
 							Thread.currentThread();
 							try {
-								Thread.sleep(5);
+								Thread.sleep(2);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -294,6 +294,7 @@ public class Field extends Canvas
 							tiles[k].state = (tiles[k].state+1) % tile_length;
 							tiles[k].setColor(tile_colors[tiles[k].state]);
 							tiles[k].setNextColor(tile_colors[(tiles[k].state+1) % tile_length]);
+							tiles[k].setChanging(0);
 						}
 					}
 				}
