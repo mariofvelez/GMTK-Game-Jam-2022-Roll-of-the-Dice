@@ -4,14 +4,18 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 
 import geometry.Shape2d;
+import math.Vec2d;
 import util.GameObject;
 
 public class UIButton extends GameObject implements UIElement {
 	
 	Shape2d bounds;
 	Shape2d projected_bounds;
+
+	Consumer<UIButton> onClick;
 	
 	public UIButton(Shape2d hitbox)
 	{
@@ -20,8 +24,19 @@ public class UIButton extends GameObject implements UIElement {
 		this.bounds = hitbox;
 		projected_bounds = hitbox.createCopy();
 	}
+
+public void setOnClick(Consumer<UIButton> onClick)
+	{
+		this.onClick = onClick;
+	}
+
 	public void mousePressed(MouseEvent e)
 	{
+//		if(bounds.intersects(new Vec2d(e.getX(), e.getY())))
+//		{
+			if(onClick != null)
+				onClick.accept(this);
+//		}
 		
 	}
 	public void mouseReleased(MouseEvent e)

@@ -88,6 +88,9 @@ public class Field extends Canvas
 		
 		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(0, 4), new Vec2d(5, 2));
 		UIButton play_button = new UIButton(play_shape);
+		play_button.setOnClick((e) -> {
+			System.out.println("Play button clicked");
+		});
 		title_screen.addChild(play_button);
 		title_screen.addUIElement(play_button);
 		
