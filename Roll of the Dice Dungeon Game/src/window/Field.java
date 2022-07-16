@@ -83,7 +83,7 @@ public class Field extends Canvas
 		keysDown = new ArrayList<Integer>();
 		
 		SpriteSheet.loadSpriteSheet("Tiles", "/res/castle_tileset_full.png", 12, 4);
-		SpriteSheet.loadSpriteSheet("Player", "/res/player", "priest2_v1_", 4);
+		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
 		
 		title_screen = new GameWorld();
