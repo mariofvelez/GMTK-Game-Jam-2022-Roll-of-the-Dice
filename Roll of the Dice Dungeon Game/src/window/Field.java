@@ -21,6 +21,7 @@ import java.util.Random;
 import environment.Tile;
 import geometry.Polygon2d;
 import geometry.Shape2d;
+import hud.Clock;
 import math.Vec2d;
 import ui.UIButton;
 import ui.UIText;
@@ -116,17 +117,15 @@ public class Field extends Canvas
 		
 		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(0, 4), new Vec2d(5, 2));
 		UIButton play_button = new UIButton(play_shape);
-		play_button.setOnClick((e) -> {
-			setActiveWorld(game);
-		});
+
 		title_screen.addChild(play_button);
 		title_screen.addUIElement(play_button);
 		
 		
 		//Game scene
 		game = new GameWorld();
-		//background, shadow, player
-		game.setDrawLayers(new int[] {100, 100, 100});
+		//background, shadow, player, hud
+		game.setDrawLayers(new int[] {100, 100, 100, 100});
 		game.setPosition(size.width/2f, size.height/2f);
 		game.setScale(45, -45);
 		
@@ -147,8 +146,22 @@ public class Field extends Canvas
 		player_shadow.setPosition(-0.5f, 0.8f);
 		player_shadow.setLayer(1);
 		player.addChild(player_shadow);
+
+		Clock timer = new Clock(5.0f, 30);
+		timer.setPosition(0, 0);
+		timer.setLayer(3);
+		timer.setOnTimeUp((e) -> {
+			System.out.println("Time up!");
+		});
+		game.addChild(timer);
+
 		
 		setActiveWorld(title_screen);
+
+		play_button.setOnClick((e) -> {
+			setActiveWorld(game);
+			timer.start();
+		});
 	}
 	
 	public void setActiveWorld(GameWorld to_set)
