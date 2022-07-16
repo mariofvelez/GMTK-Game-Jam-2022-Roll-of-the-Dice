@@ -63,5 +63,13 @@ public class UIButton extends GameObject implements UIElement {
 		g2.setColor(Color.GREEN);
 		projected_bounds.debugDraw(g2, false);
 	}
+	public void draw(Graphics2D g2)
+	{
+		updateTransform();
+		
+		bounds.projectTo(projected, projected_bounds);
+		g2.setColor(Color.GREEN);
+		projected_bounds.debugDraw(g2, false);
+	}
 
 }

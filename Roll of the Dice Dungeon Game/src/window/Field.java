@@ -18,6 +18,7 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.Random;
 
+import environment.LevelGenerator;
 import environment.Tile;
 import geometry.Circle;
 import geometry.Polygon2d;
@@ -70,9 +71,7 @@ public class Field extends Canvas
 	GameWorld title_screen; //title screen scene
 	GameWorld game; //game scene
 	
-	Tile[] tiles;
-	Color[] tile_colors; //possible colors for the tiles in order
-	int tile_length = 4; //current number of colors for the level
+	LevelGenerator level_gen;
 	
 	GameObject player;
 	Sprite player_sprite;
@@ -99,13 +98,6 @@ public class Field extends Canvas
 		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
 		
-		tile_colors = new Color[5];
-		tile_colors[0] = new Color(230, 88, 60);
-		tile_colors[1] = new Color(75, 178, 219);
-		tile_colors[2] = new Color(255, 239, 66);
-		tile_colors[3] = new Color(46, 232, 53);
-		tile_colors[4] = new Color(99, 44, 176);
-		
 		
 		title_screen = new GameWorld();
 		//background, graphics, buttons, graphics, foreground
@@ -128,13 +120,11 @@ public class Field extends Canvas
 		
 		//Game scene
 		game = new GameWorld();
+		level_gen = new LevelGenerator(game);
 		//background, shadow, player, hud
-		game.setDrawLayers(new int[] {100, 100, 100, 100});
+		game.setDrawLayers(new int[] {200, 100, 100, 100});
 		game.setPosition(size.width/2f, size.height/2f);
 		game.setScale(45, -45);
-		
-		generateTiles(tile_length, -5, -5, 10, 10);
-		createWall(new Vec2d(0, 5), new Vec2d(5, 0.3f));
 		
 		player = new GameObject();
 		player.setPosition(5, 5);
@@ -164,7 +154,8 @@ public class Field extends Canvas
 			System.out.println("Time up!");
 		});
 		game.addChild(timer);
-
+		
+		level_gen.generateLevel(3, -7.5f, -5, 15, 10);
 		
 		setActiveWorld(title_screen);
 
@@ -185,58 +176,6 @@ public class Field extends Canvas
 		this.addMouseMotionListener(to_set);
 		
 		curr = to_set;
-	}
-	
-	public Tile createTile(Color c, int state, float x, float y)
-	{
-		Tile tile = new Tile(c, state);
-		tile.setPosition(x, y);
-		tile.setLayer(0);
-		game.addChild(tile);
-		
-		return tile;
-	}
-	/**
-	 * Generates a bunch of tiles
-	 * @param cols - the number of colors
-	 * @param sx - starting position
-	 * @param sy
-	 * @param width - how many tiles wide
-	 * @param height - how many tiles tall
-	 */
-	public void generateTiles(int cols, int sx, int sy, int width, int height)
-	{
-		tiles = new Tile[width * height];
-		Random r = new Random();
-		tile_length = cols;
-		for(int y = 0; y < height; ++y)
-		{
-			for(int x = 0; x < width; ++x)
-			{
-				int rand = r.nextInt(cols);
-				Tile tile = createTile(tile_colors[rand], rand, sx + x, sy + y);
-				tile.setNextColor(tile_colors[(rand+1) % tile_length]);
-				tiles[y*width + x] = tile;
-			}
-		}
-	}
-	public GameObject createWall(Vec2d pos, Vec2d dim)
-	{
-		GameObject wall = new GameObject();
-		wall.setPosition(pos.x, pos.y);
-		
-		Body body = new Body(new Vec2d(0, 0), CollisionType.STATIC);
-		body.setShape(Polygon2d.createAsBox(new Vec2d(), dim));
-		BodyComponent comp = new BodyComponent(body);
-		game.addChild(wall);
-		
-		wall.addComponent(comp);
-		
-		return wall;
-	}
-	public void createRoom(int cols, int sx, int sy, int width, int height)
-	{
-		
 	}
 
 	public void paint(Graphics g) {
@@ -291,7 +230,7 @@ public class Field extends Canvas
 		Toolkit.getDefaultToolkit().sync();
 	}
 	
-	float speed = 0.2f;
+	float speed = 0.1f;
 	public void DoLogic() {
 		
 		if(keysDown.contains(KeyEvent.VK_A))
@@ -318,19 +257,19 @@ public class Field extends Canvas
 					{
 						for(int j = 0; j < 0; ++j)
 						{
-							for(int k = 0; k < tiles.length; ++k)
+							for(int k = 0; k < level_gen.tiles.length; ++k)
 							{
-								tiles[k].setChanging(j / 20f);
+								level_gen.tiles[k].setChanging(j / 20f);
 							}
 							
 							
 						}
-						for(int k = 0; k < tiles.length; ++k)
+						for(int k = 0; k < level_gen.tiles.length; ++k)
 						{
-							tiles[k].state = (tiles[k].state+1) % tile_length;
-							tiles[k].setColor(tile_colors[tiles[k].state]);
-							tiles[k].setNextColor(tile_colors[(tiles[k].state+1) % tile_length]);
-							tiles[k].setChanging(0);
+							level_gen.tiles[k].state = (level_gen.tiles[k].state+1) % level_gen.tile_length;
+							level_gen.tiles[k].setColor(level_gen.tile_colors[level_gen.tiles[k].state]);
+							level_gen.tiles[k].setNextColor(level_gen.tile_colors[(level_gen.tiles[k].state+1) % level_gen.tile_length]);
+							level_gen.tiles[k].setChanging(0);
 						}
 						Thread.currentThread();
 						try {
@@ -390,8 +329,14 @@ public class Field extends Canvas
 			// where everything will be drawn to the backbuffer
 			Graphics2D g2 = (Graphics2D) bufferGraphics;
 			
-			curr.debugDraw(g2);
-//			curr.draw(g2);
+//			curr.debugDraw(g2);
+			curr.draw(g2);
+			//debug physics shapes draw
+			curr.physics_world.forEachShape((shape) -> {
+				Shape2d proj = shape.createCopy();
+				shape.projectTo(curr.projected, proj);
+				proj.debugDraw(g2, true);
+			});
 
 		} catch (Exception e) {
 			e.printStackTrace();

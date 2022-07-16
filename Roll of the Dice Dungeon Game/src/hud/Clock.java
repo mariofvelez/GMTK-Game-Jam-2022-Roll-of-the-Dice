@@ -14,7 +14,7 @@ public class Clock extends GameObject {
 	private double start_time;
 	private final int radius;
 	boolean running = false;
-	private final float criticalThreshold = .33f;
+	private final float criticalThreshold = .25f;
 	Consumer<Clock> onTimeUp;
 
 	public Clock(double allotted_time, int radius) {
@@ -38,7 +38,7 @@ public class Clock extends GameObject {
 		// Draw an arc representing the time left.
 		if(time_left / allotted_time > criticalThreshold) {
 			g2.setColor(Color.BLACK);
-		} else {
+		} else if(time_left % 0.5f < 0.25f) {
 			g2.setColor(Color.RED);
 		}
 		g2.fillArc((int) (xPos - radius), (int) (yPos - radius), radius * 2, radius * 2, 0, (int) (360 * (time_left / allotted_time)));
@@ -53,7 +53,7 @@ public class Clock extends GameObject {
 		// Draw an arc representing the time left.
 		if((time_left / allotted_time) > criticalThreshold) {
 			g2.setColor(Color.BLACK);
-		} else {
+		} else if(time_left % 0.5f < 0.25f){
 			g2.setColor(Color.RED);
 		}
 		g2.fillArc((int) (xPos - radius), (int) (yPos - radius), radius * 2, radius * 2, 0, (int) (360 * (time_left / allotted_time)));
