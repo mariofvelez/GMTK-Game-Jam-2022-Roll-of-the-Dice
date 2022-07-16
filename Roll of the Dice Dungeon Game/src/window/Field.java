@@ -19,16 +19,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import environment.Tile;
+import geometry.Circle;
 import geometry.Polygon2d;
 import geometry.Shape2d;
 import hud.Clock;
 import math.Vec2d;
+import physics.body.Body;
+import physics.body.CollisionType;
 import ui.UIButton;
 import ui.UIText;
 import util.GameObject;
 import util.GameWorld;
 import util.Sprite;
 import util.SpriteSheet;
+import util.components.BodyComponent;
 
 /**
  * 
@@ -68,7 +72,7 @@ public class Field extends Canvas
 	
 	Tile[] tiles;
 	Color[] tile_colors; //possible colors for the tiles in order
-	int tile_length = 3; //current number of colors for the level
+	int tile_length = 4; //current number of colors for the level
 	
 	GameObject player;
 	Sprite player_sprite;
@@ -129,7 +133,8 @@ public class Field extends Canvas
 		game.setPosition(size.width/2f, size.height/2f);
 		game.setScale(45, -45);
 		
-		generateTiles(3, -5, -5, 10, 10);
+		generateTiles(tile_length, -5, -5, 10, 10);
+		createWall(new Vec2d(0, 5), new Vec2d(5, 0.3f));
 		
 		player = new GameObject();
 		player.setPosition(5, 5);
@@ -141,13 +146,18 @@ public class Field extends Canvas
 		player_sprite.setLayer(2);
 		player.addChild(player_sprite);
 		
+		Body player_body = new Body(new Vec2d(), CollisionType.DYNAMIC);
+		player_body.setShape(new Circle(new Vec2d(), 0.5f));
+		BodyComponent player_body_comp = new BodyComponent(player_body);
+		player.addComponent(player_body_comp);
+		
 		Sprite player_shadow = new Sprite(SpriteSheet.getSpriteSheet("Shadow"), 0, 16);
 		player_shadow.setScale(1, -1);
 		player_shadow.setPosition(-0.5f, 0.8f);
 		player_shadow.setLayer(1);
 		player.addChild(player_shadow);
 
-		Clock timer = new Clock(5.0f, 30);
+		Clock timer = new Clock(15.0f, 30);
 		timer.setPosition(size.width - 60, 50);
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
@@ -209,6 +219,24 @@ public class Field extends Canvas
 				tiles[y*width + x] = tile;
 			}
 		}
+	}
+	public GameObject createWall(Vec2d pos, Vec2d dim)
+	{
+		GameObject wall = new GameObject();
+		wall.setPosition(pos.x, pos.y);
+		
+		Body body = new Body(new Vec2d(0, 0), CollisionType.STATIC);
+		body.setShape(Polygon2d.createAsBox(new Vec2d(), dim));
+		BodyComponent comp = new BodyComponent(body);
+		game.addChild(wall);
+		
+		wall.addComponent(comp);
+		
+		return wall;
+	}
+	public void createRoom(int cols, int sx, int sy, int width, int height)
+	{
+		
 	}
 
 	public void paint(Graphics g) {
@@ -288,19 +316,14 @@ public class Field extends Canvas
 					
 					for(int i = 0; i < index+1; ++i) //change color for each number on the dice roll
 					{
-						for(int j = 0; j < 20; ++j)
+						for(int j = 0; j < 0; ++j)
 						{
 							for(int k = 0; k < tiles.length; ++k)
 							{
 								tiles[k].setChanging(j / 20f);
 							}
 							
-							Thread.currentThread();
-							try {
-								Thread.sleep(2);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
+							
 						}
 						for(int k = 0; k < tiles.length; ++k)
 						{
@@ -308,6 +331,12 @@ public class Field extends Canvas
 							tiles[k].setColor(tile_colors[tiles[k].state]);
 							tiles[k].setNextColor(tile_colors[(tiles[k].state+1) % tile_length]);
 							tiles[k].setChanging(0);
+						}
+						Thread.currentThread();
+						try {
+							Thread.sleep(0);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
 				}
