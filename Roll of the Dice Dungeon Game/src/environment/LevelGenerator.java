@@ -20,7 +20,7 @@ public class LevelGenerator {
 	
 	public Tile[] tiles;
 	public Color[] tile_colors; //possible colors for the tiles in order
-	public int tile_length = 4; //current number of colors for the level
+	public int tile_length = 2; //current number of colors for the level
 	
 	public LevelGenerator(GameWorld world)
 	{
@@ -136,6 +136,7 @@ public class LevelGenerator {
 		Tile tile = new Tile(c, state);
 		tile.setPosition(x, y);
 		tile.setLayer(0);
+		tile.ID = 5;
 		world.addChild(tile);
 		
 		return tile;

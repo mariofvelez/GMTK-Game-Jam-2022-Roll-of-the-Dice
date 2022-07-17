@@ -32,12 +32,12 @@ public class GameWorld extends GameObject implements DebugDraw, MouseListener, K
 		start_time = System.currentTimeMillis();
 		
 		inverse = new Transform(3, true);
-		drawable_remove_list = new LimitedArray<>(100);
-		object_delete_list = new LimitedArray<>(100);
+		drawable_remove_list = new LimitedArray<>(500);
+		object_delete_list = new LimitedArray<>(500);
 		ui_elements = new ArrayList<>();
 		try {
-			drawable_remove_list.setArray(new DrawableReference[100]);
-			object_delete_list.setArray(new GameObject[100]);
+			drawable_remove_list.setArray(new DrawableReference[500]);
+			object_delete_list.setArray(new GameObject[500]);
 		} catch (Exception e) {}
 	}
 	public void addUIElement(UIElement e)

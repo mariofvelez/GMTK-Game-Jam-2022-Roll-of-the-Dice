@@ -2,9 +2,10 @@ package window;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
@@ -24,7 +25,7 @@ public class Window extends JFrame
 	
 	public static Window window;
 	
-	public Window(String name)
+	public Window(String name) throws IOException
 	{
 		super(name);
 		
@@ -32,21 +33,9 @@ public class Window extends JFrame
 		
 		Dimension windowSize = new Dimension(WIDTH, HEIGHT);
 		this.setSize(windowSize);
-		//get a buffer image from a file
-		BufferedImage img = null;
-		try
-		{
-			URL url = this.getClass().getResource("/res/testDie.png");
-			img = javax.imageio.ImageIO.read(url);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		if(img != null) {
-			this.setIconImage(img);
-		}
+		
+		URL url = this.getClass().getResource("/res/testDie.png");
+		this.setIconImage(ImageIO.read(url));
 	}
 	public static void main(String[] args) throws Exception
 	{
@@ -57,8 +46,10 @@ public class Window extends JFrame
 		Field field = new Field(window.getSize());
 		contentPane.add(field);
 		
+		window.setResizable(false);
 		window.setVisible(true);
 		window.setLocation(200, 100);
+		
 	}
 	public static void close()
 	{

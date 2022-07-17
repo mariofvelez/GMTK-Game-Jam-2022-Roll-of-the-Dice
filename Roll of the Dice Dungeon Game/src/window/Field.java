@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -89,13 +90,24 @@ public class Field extends Canvas
 	
 	ParticleEmitter player_death;
 	
+	int safe_col = 0;
+	Vec2d[] sides = new Vec2d[] {
+			new Vec2d(-8.5f, 0f),
+			new Vec2d(0f, 6f),
+			new Vec2d(8.5f, 0f),
+			new Vec2d(0f, -6f)
+	};
+	Vec2d restart_pos = sides[0];
+	int last_side = 0;
+	int max_roll = 2;
+	
 	public Field(Dimension size) throws Exception {
 		this.setPreferredSize(size);
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addMouseWheelListener(this);
-		this.setBackground(new Color(54, 37, 37));
+//		this.setBackground(new Color(54, 37, 37));
 
 		this.thread = new Thread(this);
 		running = true;
@@ -121,12 +133,12 @@ public class Field extends Canvas
 		game = new GameWorld();
 		level_gen = new LevelGenerator(game);
 		//background, shadow, player, hud
-		game.setDrawLayers(new int[] {300, 100, 100, 100});
+		game.setDrawLayers(new int[] {500, 500, 100, 100});
 		game.setPosition(size.width/2f, size.height/2f - 15);
 		game.setScale(45, -45);
 		
 		player = new GameObject();
-		player.setPosition(-8.5f, 0);
+		player.setPosition(restart_pos.x, restart_pos.y);
 		game.addChild(player);
 		
 		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 32);
@@ -161,7 +173,7 @@ public class Field extends Canvas
 		player_death.setLayer(1);
 		player.addChild(player_death);
 
-		timer = new Clock(15.0f, 30);
+		timer = new Clock(30.0f, 30);
 		timer.setPosition(size.width - 60, 50);
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
@@ -170,7 +182,8 @@ public class Field extends Canvas
 		});
 		game.addChild(timer);
 		
-		level_gen.generateLevel(3, -7.5f, -5, 15, 10);
+		level_gen.generateLevel(2, -7.5f, -5, 15, 10);
+		this.setBackground(level_gen.tile_colors[safe_col]);
 		
 		setActiveWorld(title_screen);
 
@@ -180,12 +193,12 @@ public class Field extends Canvas
 		});
 		
 		tutorial = new GameWorld();
-		tutorial.setScale(0.9f, 0.9f);
+//		tutorial.setScale(0.9f, 0.9f);
 		//just the image
 		tutorial.setDrawLayers(new int[] {5});
 		
-		Sprite tutorial_sprite = new Sprite(SpriteSheet.getSpriteSheet("Tutorial"), 0, 1);
-		tutorial_sprite.setPosition(30, 50);
+		Sprite tutorial_sprite = new Sprite(SpriteSheet.getSpriteSheet("Tutorial"), 0, 1f);
+		tutorial_sprite.setPosition(-10, 50);
 		tutorial.addChild(tutorial_sprite);
 		
 
@@ -241,6 +254,11 @@ public class Field extends Canvas
 		this.addKeyListener(to_set);
 		this.addMouseMotionListener(to_set);
 		
+		if(to_set == tutorial)
+			this.setBackground(new Color(230, 230, 230));
+		if(to_set == game)
+			this.setBackground(level_gen.tile_colors[safe_col]);
+		
 		curr = to_set;
 	}
 	
@@ -251,8 +269,35 @@ public class Field extends Canvas
 		
 		player_death.play();
 		health_bar.removeLife();
-		player.setPosition(-8.5f, 0);
+		player.setPosition(restart_pos.x, restart_pos.y);
 		timer.start();
+	}
+	
+	public void nextLevel()
+	{
+		timer.start();
+		
+		game.forEachID((obj) -> {
+			obj.delete();
+		}, 5);
+		
+		if(Math.random() < 0.3f)
+			max_roll++;
+		if(max_roll > 6)
+			max_roll = 6;
+		
+		if(Math.random() < 0.2f)
+			level_gen.tile_length++;
+		if(level_gen.tile_length > 5)
+			level_gen.tile_length = 5;
+		
+		player.setPosition(restart_pos.x, restart_pos.y);
+		
+		safe_col = (int) (Math.random() * level_gen.tile_length);
+		
+		level_gen.generateTiles(level_gen.tile_length, -7.5f, -5f, 15, 10);
+		
+		this.setBackground(level_gen.tile_colors[safe_col]);
 	}
 
 	public void paint(Graphics g) {
@@ -320,10 +365,36 @@ public class Field extends Canvas
 			player.move(0f, -speed);
 		
 		Vec2d p_pos = new Vec2d(player.projected.data[2], player.projected.data[5]);
-		boolean hit = level_gen.checkIntersected(p_pos, 0);
+		boolean hit = level_gen.checkIntersected(p_pos, safe_col);
 		if(hit && player_z == 0)
 		{
 			loseLife();
+		}
+		
+		Vec2d pos = new Vec2d(player.transform.data[2], player.transform.data[5]);
+		if(pos.x > 8.5f && last_side != 2)
+		{
+			last_side = 0;
+			restart_pos = sides[last_side];
+			nextLevel();
+		}
+		if(pos.x < -8.5f && last_side != 0)
+		{
+			last_side = 2;
+			restart_pos = sides[last_side];
+			nextLevel();
+		}
+		if(pos.y > 6f && last_side != 1)
+		{
+			last_side = 3;
+			restart_pos = sides[last_side];
+			nextLevel();
+		}
+		if(pos.y < -6f && last_side != 3)
+		{
+			last_side = 1;
+			restart_pos = sides[last_side];
+			nextLevel();
 		}
 		
 		if(keysDown.contains(KeyEvent.VK_SPACE) && player_z == 0)
@@ -375,7 +446,7 @@ public class Field extends Canvas
 					
 					while(player_z > 0)
 					{
-						player_index = r.nextInt(6);
+						player_index = r.nextInt(max_roll);
 						player_sprite.setImage(player_index);
 						
 						Thread.currentThread();
@@ -413,6 +484,8 @@ public class Field extends Canvas
 			bufferGraphics.clearRect(0, 0, this.getSize().width, this.getSize().height);
 			// where everything will be drawn to the backbuffer
 			Graphics2D g2 = (Graphics2D) bufferGraphics;
+			
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			
 			curr.draw(g2);
 //			curr.debugDraw(g2);
@@ -473,6 +546,8 @@ public class Field extends Canvas
 		{
 			
 		}
+		if(curr == game)
+		nextLevel();
 	}
 
 	@Override
