@@ -166,10 +166,11 @@ public class Field extends Canvas
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
 			System.out.println("Time up!");
+			loseLife();
 		});
 		game.addChild(timer);
 		
-		level_gen.generateLevel(2, -7.5f, -5, 15, 10);
+		level_gen.generateLevel(3, -7.5f, -5, 15, 10);
 		
 		setActiveWorld(title_screen);
 
@@ -472,7 +473,6 @@ public class Field extends Canvas
 		{
 			
 		}
-		loseLife();
 	}
 
 	@Override
