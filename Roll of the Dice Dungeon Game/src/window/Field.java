@@ -24,6 +24,7 @@ import geometry.Circle;
 import geometry.Polygon2d;
 import geometry.Shape2d;
 import hud.Clock;
+import hud.HealthBar;
 import math.Vec2d;
 import physics.body.Body;
 import physics.body.CollisionType;
@@ -71,10 +72,13 @@ public class Field extends Canvas
 	GameWorld title_screen; //title screen scene
 	GameWorld game; //game scene
 	GameWorld tutorial;
+	HealthBar health_bar;
+
 	
 	LevelGenerator level_gen;
 	
 	GameObject player;
+	int lives = 3;
 	Sprite player_sprite;
 	float player_z = 0;
 	float player_vz = 0;
@@ -190,6 +194,30 @@ public class Field extends Canvas
 		tutorial_back_button.setOnClick((e) -> {
 			setActiveWorld(title_screen);
 		});
+
+		health_bar = new HealthBar(5);
+		health_bar.setPosition(0, 0);
+		health_bar.setLayer(3);
+		health_bar.setScale(1, -1);
+		game.addChild(health_bar);
+		health_bar.init();
+		health_bar.setOnDie((e) -> {
+			System.out.println("You died!");
+		});
+
+		//create a thread where every 5 seconds health bar will be updated
+		new Thread(() -> {
+			while(true) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				health_bar.removeLife();
+
+			}
+		}).start();
+
 	}
 	
 	public void setActiveWorld(GameWorld to_set)
