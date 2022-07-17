@@ -58,6 +58,8 @@ public class TitleScreen {
 		dungeon_text.color = titleColor;
 		dungeon_text.setPosition(-11, -2);
 
+		die_text.setLayer(3);
+		dungeon_text.setLayer(3);
 		this.world.addChild(die_text);
 		this.world.addChild(dungeon_text);
 
@@ -84,9 +86,31 @@ public class TitleScreen {
 			}
 		});
 
-		Sprite cardTest = new Sprite(SpriteSheet.getSpriteSheet("Cards"), 0, 32);
-		cardTest.setLayer(3);
-		this.world.addChild(cardTest);
+		for(int i = 0; i < 52; i++){
+			Sprite cardTest = new Sprite(SpriteSheet.getSpriteSheet("Cards"), i, 32);
+			//set the cards position to a random edge of the screen
+			int wall = (int) (Math.random() * 4);
+			switch (wall) {
+				case 0:
+					cardTest.setPosition((float) (Math.random() * 34 - 34/2), -12);
+					break;
+				case 1:
+					cardTest.setPosition((float) (Math.random() * 34 - 34/2), 12);
+					break;
+					case 2:
+					cardTest.setPosition(-12, (float) (Math.random() * 34 - 34/2));
+					break;
+					case 3:
+					cardTest.setPosition(12, (float) (Math.random() * 34 - 34/2));
+					break;
+			}
+
+			cardTest.setLayer(1);
+			cardTest.setRotation(0,0, (float) Math.toRadians(Math.random() * 360));
+			cardTest.rotate();
+			this.world.addChild(cardTest);
+
+		}
 
 
 	}
