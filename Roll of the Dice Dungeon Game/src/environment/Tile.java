@@ -14,7 +14,7 @@ public class Tile extends GameObject {
 	public int state = 0;
 	float changing = 0; //animation changing to next color
 	private Polygon2d shape;
-	private Polygon2d draw_shape;
+	public Polygon2d draw_shape;
 	
 	public Tile(Color color, int state)
 	{

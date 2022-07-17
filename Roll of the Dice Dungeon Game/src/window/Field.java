@@ -32,6 +32,7 @@ import ui.UIButton;
 import ui.UIText;
 import util.GameObject;
 import util.GameWorld;
+import util.ParticleEmitter;
 import util.Sprite;
 import util.SpriteSheet;
 import util.components.BodyComponent;
@@ -83,6 +84,8 @@ public class Field extends Canvas
 	float player_z = 0;
 	float player_vz = 0;
 	int player_index = 0; //dice roll
+	
+	ParticleEmitter player_death;
 	
 	public Field(Dimension size) throws Exception {
 		this.setPreferredSize(size);
@@ -152,6 +155,21 @@ public class Field extends Canvas
 		player_shadow.setPosition(-0.5f, 0.8f);
 		player_shadow.setLayer(1);
 		player.addChild(player_shadow);
+		
+		player_death = new ParticleEmitter(500);
+		player_death.setShape(new Circle(new Vec2d(0, 0), 1f), 0, (float) Math.PI*2f);
+		player_death.radius = 3f;
+		player_death.lifetime = 1f;
+		player_death.emission_speed = 200;
+		player_death.start_color = new Color(255, 255, 255, 255);
+		player_death.end_color = new Color(255, 255, 255, 0);
+		player_death.particle_speed = 5f;
+		player_death.repeating = false;
+		player_death.duration = 0.1f;
+		player_death.gravity_scale = 0f;
+		player_death.attached_body = player_body;
+		player_death.setLayer(1);
+		player.addChild(player_death);
 
 		Clock timer = new Clock(15.0f, 30);
 		timer.setPosition(size.width - 60, 50);
@@ -196,13 +214,31 @@ public class Field extends Canvas
 		});
 
 		health_bar = new HealthBar(5);
-		health_bar.setPosition(0, 0);
+		health_bar.setPosition(3, -5);
 		health_bar.setLayer(3);
 		health_bar.setScale(1, -1);
 		game.addChild(health_bar);
 		health_bar.init();
 		health_bar.setOnDie((e) -> {
 			System.out.println("You died!");
+			
+			Thread after_die_thread = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					Thread.currentThread();
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					setActiveWorld(title_screen);
+					health_bar.reset(5);					
+				}
+			});
+			after_die_thread.start();
+			
 		});
 
 	}
@@ -218,6 +254,16 @@ public class Field extends Canvas
 		this.addMouseMotionListener(to_set);
 		
 		curr = to_set;
+	}
+	
+	public void loseLife()
+	{
+		if(curr != game)
+			return;
+		
+		player_death.play();
+		health_bar.removeLife();
+		player.setPosition(-7.5f, 0);
 	}
 
 	public void paint(Graphics g) {
@@ -283,6 +329,11 @@ public class Field extends Canvas
 			player.move(0f, speed);
 		if(keysDown.contains(KeyEvent.VK_S))
 			player.move(0f, -speed);
+		
+		Vec2d p_pos = new Vec2d(player.projected.data[2], player.projected.data[5]);
+		boolean hit = level_gen.checkIntersected(p_pos, 0);
+//		System.out.println(hit);
+		
 		if(keysDown.contains(KeyEvent.VK_SPACE) && player_z == 0)
 		{
 			//jump, roll dice again
@@ -371,8 +422,8 @@ public class Field extends Canvas
 			// where everything will be drawn to the backbuffer
 			Graphics2D g2 = (Graphics2D) bufferGraphics;
 			
-//			curr.debugDraw(g2);
 			curr.draw(g2);
+//			curr.debugDraw(g2);
 			//debug physics shapes draw
 //			curr.physics_world.forEachShape((shape) -> {
 //				Shape2d proj = shape.createCopy();
@@ -430,6 +481,7 @@ public class Field extends Canvas
 		{
 			
 		}
+		loseLife();
 	}
 
 	@Override

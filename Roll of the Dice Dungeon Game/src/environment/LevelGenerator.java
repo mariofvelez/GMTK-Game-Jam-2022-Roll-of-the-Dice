@@ -178,5 +178,18 @@ public class LevelGenerator {
 		
 		return wall;
 	}
+	public boolean checkIntersected(Vec2d pos, int state)
+	{
+		for(int i = 0; i < tiles.length; ++i)
+		{
+			Tile tile = tiles[i];
+			if(tile.state != state)
+			{
+				if(tile.draw_shape.intersects(pos))
+					return true;
+			}
+		}
+		return false;
+	}
 
 }

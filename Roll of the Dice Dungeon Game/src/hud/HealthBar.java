@@ -14,7 +14,7 @@ public class HealthBar extends GameObject {
 	public HealthBar(int lives) {
 		this.lives = lives;
 	}
-public void init(){
+	public void init(){
 	SpriteSheet.loadSpriteSheet("Heart", "/res/heart.png", 1, 1);
 	//create {lives} hearts
 	for (int i = 0; i < lives; i++) {
