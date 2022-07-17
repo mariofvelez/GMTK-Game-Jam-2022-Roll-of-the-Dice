@@ -205,19 +205,6 @@ public class Field extends Canvas
 			System.out.println("You died!");
 		});
 
-		//create a thread where every 5 seconds health bar will be updated
-		new Thread(() -> {
-			while(true) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				health_bar.removeLife();
-
-			}
-		}).start();
-
 	}
 	
 	public void setActiveWorld(GameWorld to_set)
