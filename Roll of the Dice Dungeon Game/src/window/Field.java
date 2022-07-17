@@ -359,13 +359,13 @@ public class Field extends Canvas
 	float speed = 0.1f;
 	public void DoLogic() {
 		
-		if(keysDown.contains(KeyEvent.VK_A))
+		if(keysDown.contains(KeyEvent.VK_A) || keysDown.contains(KeyEvent.VK_LEFT))
 			player.move(-speed, 0f);
-		if(keysDown.contains(KeyEvent.VK_D))
+		if(keysDown.contains(KeyEvent.VK_D) || keysDown.contains(KeyEvent.VK_RIGHT))
 			player.move(speed, 0f);
-		if(keysDown.contains(KeyEvent.VK_W))
+		if(keysDown.contains(KeyEvent.VK_W )|| keysDown.contains(KeyEvent.VK_UP))
 			player.move(0f, speed);
-		if(keysDown.contains(KeyEvent.VK_S))
+		if(keysDown.contains(KeyEvent.VK_S )|| keysDown.contains(KeyEvent.VK_DOWN))
 			player.move(0f, -speed);
 		
 		Vec2d p_pos = new Vec2d(player.projected.data[2], player.projected.data[5]);
