@@ -486,7 +486,6 @@ public class Field extends Canvas
 		{
 			
 		}
-		loseLife();
 	}
 
 	@Override
