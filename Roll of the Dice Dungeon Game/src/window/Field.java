@@ -134,12 +134,12 @@ public class Field extends Canvas
 		
 		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 32);
 		player_sprite.setScale(1, -1);
-		player_sprite.setPosition(-0.5f, 1f);
+		player_sprite.setPosition(-0.5f, 0.5f);
 		player_sprite.setLayer(2);
 		player.addChild(player_sprite);
 		
 		Body player_body = new Body(new Vec2d(), CollisionType.DYNAMIC);
-		player_body.setShape(new Circle(new Vec2d(), 0.5f));
+		player_body.setShape(new Circle(new Vec2d(), 0.3f));
 		BodyComponent player_body_comp = new BodyComponent(player_body);
 		player.addComponent(player_body_comp);
 		
@@ -341,7 +341,7 @@ public class Field extends Canvas
 			player_vz = 0;
 		}
 		
-		player_sprite.setPosition(-0.5f, 1 + player_z);
+		player_sprite.setPosition(-0.5f, 0.8f + player_z);
 		
 		curr.step();
 		runTime++;
