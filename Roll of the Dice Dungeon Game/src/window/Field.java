@@ -86,6 +86,7 @@ public class Field extends Canvas
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addMouseWheelListener(this);
+		this.setBackground(new Color(54, 37, 37));
 
 		this.thread = new Thread(this);
 		running = true;
@@ -95,7 +96,7 @@ public class Field extends Canvas
 
 		keysDown = new ArrayList<Integer>();
 		
-		SpriteSheet.loadSpriteSheet("Tiles", "/res/castle_tileset_full.png", 12, 4);
+		SpriteSheet.loadSpriteSheet("Walls", "/res/castle_tileset_full.png", 12, 4);
 		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
 		SpriteSheet.loadSpriteSheet("Tutorial", "/res/tutorial.png", 1, 1);
@@ -123,8 +124,8 @@ public class Field extends Canvas
 		game = new GameWorld();
 		level_gen = new LevelGenerator(game);
 		//background, shadow, player, hud
-		game.setDrawLayers(new int[] {200, 100, 100, 100});
-		game.setPosition(size.width/2f, size.height/2f);
+		game.setDrawLayers(new int[] {300, 100, 100, 100});
+		game.setPosition(size.width/2f, size.height/2f - 15);
 		game.setScale(45, -45);
 		
 		player = new GameObject();
@@ -156,7 +157,7 @@ public class Field extends Canvas
 		});
 		game.addChild(timer);
 		
-		level_gen.generateLevel(3, -7.5f, -5, 15, 10);
+		level_gen.generateLevel(5, -7.5f, -5, 15, 10);
 		
 		setActiveWorld(title_screen);
 
@@ -358,11 +359,11 @@ public class Field extends Canvas
 //			curr.debugDraw(g2);
 			curr.draw(g2);
 			//debug physics shapes draw
-			curr.physics_world.forEachShape((shape) -> {
-				Shape2d proj = shape.createCopy();
-				shape.projectTo(curr.projected, proj);
-				proj.debugDraw(g2, true);
-			});
+//			curr.physics_world.forEachShape((shape) -> {
+//				Shape2d proj = shape.createCopy();
+//				shape.projectTo(curr.projected, proj);
+//				proj.debugDraw(g2, true);
+//			});
 
 		} catch (Exception e) {
 			e.printStackTrace();

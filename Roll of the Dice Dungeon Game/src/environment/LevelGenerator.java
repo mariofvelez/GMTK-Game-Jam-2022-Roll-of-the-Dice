@@ -9,6 +9,8 @@ import physics.body.Body;
 import physics.body.CollisionType;
 import util.GameObject;
 import util.GameWorld;
+import util.Sprite;
+import util.SpriteSheet;
 import util.components.BodyComponent;
 
 public class LevelGenerator {
@@ -49,6 +51,84 @@ public class LevelGenerator {
 		//right
 		createWall(new Vec2d(sx + width, sy + w_height), new Vec2d(0.1f, w_height));
 		createWall(new Vec2d(sx + width, sy + height - w_height), new Vec2d(0.1f, w_height));
+		
+		//corners
+		Sprite tl = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 6, 32);
+		tl.setPosition(sx - 1, sy - 1);
+		world.addChild(tl);
+		
+		Sprite tr = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 7, 32);
+		tr.setPosition(sx + width, sy - 1);
+		world.addChild(tr);
+		
+		Sprite bl = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 18, 32);
+		bl.setPosition(sx - 1, sy + height);
+		world.addChild(bl);
+		
+		Sprite br = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 19, 32);
+		br.setPosition(sx + width, sy + height);
+		world.addChild(br);
+		
+		//entrances
+		Sprite t1 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 38, 32);
+		t1.setPosition(sx + width/2f - 2, sy - 1);
+		world.addChild(t1);
+		
+		Sprite t2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 36, 32);
+		t2.setPosition(sx + width/2f + 1, sy - 1);
+		world.addChild(t2);
+		
+		Sprite b1 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 38, 32);
+		b1.setPosition(sx + width/2f - 2, sy + height);
+		world.addChild(b1);
+		
+		Sprite b2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 36, 32);
+		b2.setPosition(sx + width/2f + 1, sy + height);
+		world.addChild(b2);
+		
+		Sprite r1 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 27, 32);
+		r1.setPosition(sx - 1, sy + height/2 - 2);
+		world.addChild(r1);
+		
+		Sprite r2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 3, 32);
+		r2.setPosition(sx - 1, sy + height/2 + 1);
+		world.addChild(r2);
+		
+		Sprite l1 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 27, 32);
+		l1.setPosition(sx + width, sy + height/2 - 2);
+		world.addChild(l1);
+		
+		Sprite l2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 3, 32);
+		l2.setPosition(sx + width, sy + height/2 + 1);
+		world.addChild(l2);
+		
+		//edges
+		for(int i = 0; i < width; ++i)
+		{
+			if(i < width/2-1 || i > width/2+1)
+			{
+				Sprite wall = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 37, 32);
+				wall.setPosition(sx + i, sy + height);
+				world.addChild(wall);
+				
+				Sprite wall2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 37, 32);
+				wall2.setPosition(sx + i, sy - 1);
+				world.addChild(wall2);
+			}
+		}
+		for(int i = 0; i < height; ++i)
+		{
+			if(i < height/2-2 || i > height/2+1)
+			{
+				Sprite wall = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 15, 32);
+				wall.setPosition(sx - 1, sy + i);
+				world.addChild(wall);
+				
+				Sprite wall2 = new Sprite(SpriteSheet.getSpriteSheet("Walls"), 15, 32);
+				wall2.setPosition(sx + width, sy + i);
+				world.addChild(wall2);
+			}
+		}
 	}
 	public Tile createTile(Color c, int state, float x, float y)
 	{
