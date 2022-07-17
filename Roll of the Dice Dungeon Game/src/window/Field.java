@@ -332,7 +332,10 @@ public class Field extends Canvas
 		
 		Vec2d p_pos = new Vec2d(player.projected.data[2], player.projected.data[5]);
 		boolean hit = level_gen.checkIntersected(p_pos, 0);
-//		System.out.println(hit);
+		if(hit && player_z == 0)
+		{
+			loseLife();
+		}
 		
 		if(keysDown.contains(KeyEvent.VK_SPACE) && player_z == 0)
 		{

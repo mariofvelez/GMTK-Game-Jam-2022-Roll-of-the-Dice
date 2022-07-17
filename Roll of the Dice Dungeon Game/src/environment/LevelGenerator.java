@@ -5,6 +5,7 @@ import java.util.Random;
 
 import geometry.Polygon2d;
 import math.Vec2d;
+import physics.AABB;
 import physics.body.Body;
 import physics.body.CollisionType;
 import util.GameObject;
@@ -185,7 +186,9 @@ public class LevelGenerator {
 			Tile tile = tiles[i];
 			if(tile.state != state)
 			{
-				if(tile.draw_shape.intersects(pos))
+				AABB aabb = new AABB(0, 0, 0, 0);
+				tile.draw_shape.setAABB(aabb);
+				if(aabb.intersects(pos))
 					return true;
 			}
 		}
