@@ -158,9 +158,6 @@ private static HashMap<String, SpriteSheet> sprite_sheets = new HashMap<>();
 	{
 		sprite_sheets.put(name, new SpriteSheet(foldername, prefix, num_sprites));
 	}
-	public static void loadSpriteSheet(String name,String folderName){
-		sprite_sheets.put(name, new SpriteSheet(folderName));
-	}
 	public static void loadTileSet(String name, String filename, int sprites_width, int sprites_height)
 	{
 		sprite_sheets.put(name, new TileSet(filename, sprites_width, sprites_height));
