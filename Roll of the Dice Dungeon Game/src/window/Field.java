@@ -199,7 +199,7 @@ public class Field extends Canvas
 		tutorial = new GameWorld();
 //		tutorial.setScale(0.9f, 0.9f);
 		//just the image
-		tutorial.setDrawLayers(new int[] {5});
+		tutorial.setDrawLayers(new int[] {5,5});
 		
 		Sprite tutorial_sprite = new Sprite(SpriteSheet.getSpriteSheet("Tutorial"), 0, 1f);
 		tutorial_sprite.setPosition(-10, 50);
@@ -210,13 +210,22 @@ public class Field extends Canvas
 			setActiveWorld(tutorial);
 		});
 		
-		Shape2d tutorial_back_shape = Polygon2d.createAsBox(new Vec2d(50, 20), new Vec2d(40, 15));
+		Shape2d tutorial_back_shape = Polygon2d.createAsBox(new Vec2d(50, 30), new Vec2d(40, 40));
 		UIButton tutorial_back_button = new UIButton(tutorial_back_shape);
 		tutorial.addChild(tutorial_back_button);
 		tutorial.addUIElement(tutorial_back_button);
 		tutorial_back_button.setOnClick((e) -> {
 			setActiveWorld(title_screen);
 		});
+
+		Sprite backSprite = new Sprite(SpriteSheet.getSpriteSheet("PlayCard"), 0, 1);
+
+		backSprite.setRotation(0,0, (float) Math.toRadians(90));
+		backSprite.rotate();
+		backSprite.setScale(.5f, .5f);
+		backSprite.setPosition(80, 15);
+		backSprite.setLayer(1);
+		tutorial.addChild(backSprite);
 
 		health_bar = new HealthBar(5);
 		health_bar.setPosition(3, -5);
