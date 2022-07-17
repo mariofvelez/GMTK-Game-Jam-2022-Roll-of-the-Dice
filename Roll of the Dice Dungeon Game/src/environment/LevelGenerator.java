@@ -188,6 +188,10 @@ public class LevelGenerator {
 			{
 				AABB aabb = new AABB(0, 0, 0, 0);
 				tile.draw_shape.setAABB(aabb);
+				aabb.max_x += 0.1f;
+				aabb.min_x -= 0.1f;
+				aabb.max_y += 0.1f;
+				aabb.min_y -= 0.1f;
 				if(aabb.intersects(pos))
 					return true;
 			}

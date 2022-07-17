@@ -74,7 +74,7 @@ public class Field extends Canvas
 	GameWorld game; //game scene
 	GameWorld tutorial;
 	HealthBar health_bar;
-
+	Clock timer;
 	
 	LevelGenerator level_gen;
 	
@@ -136,7 +136,7 @@ public class Field extends Canvas
 		game.setScale(45, -45);
 		
 		player = new GameObject();
-		player.setPosition(-7.5f, 0);
+		player.setPosition(-8.5f, 0);
 		game.addChild(player);
 		
 		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 32);
@@ -171,7 +171,7 @@ public class Field extends Canvas
 		player_death.setLayer(1);
 		player.addChild(player_death);
 
-		Clock timer = new Clock(15.0f, 30);
+		timer = new Clock(15.0f, 30);
 		timer.setPosition(size.width - 60, 50);
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
@@ -179,7 +179,7 @@ public class Field extends Canvas
 		});
 		game.addChild(timer);
 		
-		level_gen.generateLevel(5, -7.5f, -5, 15, 10);
+		level_gen.generateLevel(2, -7.5f, -5, 15, 10);
 		
 		setActiveWorld(title_screen);
 
@@ -263,7 +263,8 @@ public class Field extends Canvas
 		
 		player_death.play();
 		health_bar.removeLife();
-		player.setPosition(-7.5f, 0);
+		player.setPosition(-8.5f, 0);
+		timer.start();
 	}
 
 	public void paint(Graphics g) {
