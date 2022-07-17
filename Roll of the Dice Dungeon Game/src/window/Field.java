@@ -111,6 +111,9 @@ public class Field extends Canvas
 		SpriteSheet.loadSpriteSheet("Tutorial", "/res/tutorial.png", 1, 1);
 		SpriteSheet.loadSpriteSheet("Felt", "/res/feltPixelArt.png", 1, 1);
 		SpriteSheet.loadSpriteSheet("Cards", "/res/cards");
+		SpriteSheet.loadSpriteSheet("PlayCard", "/res/PlayCard.png", 1, 1);
+		SpriteSheet.loadSpriteSheet("TutCard", "/res/TutorialCard.png", 1, 1);
+
 
 		title_screen = new GameWorld();
 

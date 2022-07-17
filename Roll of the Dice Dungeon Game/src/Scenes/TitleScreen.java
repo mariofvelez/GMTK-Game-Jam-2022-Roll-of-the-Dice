@@ -63,28 +63,7 @@ public class TitleScreen {
 		this.world.addChild(die_text);
 		this.world.addChild(dungeon_text);
 
-		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(0, 4), new Vec2d(5, 2));
-		UIButton play_button = new UIButton(play_shape);
 
-		this.world.addChild(play_button);
-		this.world.addUIElement(play_button);
-
-		play_button.setOnClick((e) -> {
-			if (onStartGame != null) {
-				onStartGame.accept(this);
-			}
-		});
-
-		Shape2d tutorial_shape = Polygon2d.createAsBox(new Vec2d(-10, 4), new Vec2d(2.5f, 1));
-		UIButton tutorial_button = new UIButton(tutorial_shape);
-		this.world.addChild(tutorial_button);
-		this.world.addUIElement(tutorial_button);
-
-		tutorial_button.setOnClick((e) -> {
-			if (onStartTutorial != null) {
-				onStartTutorial.accept(this);
-			}
-		});
 
 		for(int i = 0; i < 52; i++){
 			Sprite cardTest = new Sprite(SpriteSheet.getSpriteSheet("Cards"), i, 32);
@@ -111,6 +90,44 @@ public class TitleScreen {
 			this.world.addChild(cardTest);
 
 		}
+
+		Sprite playCard = new Sprite(SpriteSheet.getSpriteSheet("PlayCard"), 0, 32);
+		playCard.setLayer(2);
+		playCard.setRotation(0,0, (float) Math.toRadians(-90));
+		playCard.rotate();
+		playCard.setPosition(0,6);
+		playCard.setScale(1.5f, 1.5f);
+
+		this.world.addChild(playCard);
+
+		Sprite tutorialCard = new Sprite(SpriteSheet.getSpriteSheet("TutCard"), 0, 32);
+		tutorialCard.setLayer(2);
+		tutorialCard.setPosition(-7,0);
+		tutorialCard.setScale(1.5f, 1.5f);
+		this.world.addChild(tutorialCard);
+
+		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(3.5f, 3.5f), new Vec2d(3, 2.5f));
+		UIButton play_button = new UIButton(play_shape);
+
+		this.world.addChild(play_button);
+		this.world.addUIElement(play_button);
+
+		play_button.setOnClick((e) -> {
+			if (onStartGame != null) {
+				onStartGame.accept(this);
+			}
+		});
+
+		Shape2d tutorial_shape = Polygon2d.createAsBox(new Vec2d(-4.5f, 3), new Vec2d(2.5f, 3));
+		UIButton tutorial_button = new UIButton(tutorial_shape);
+		this.world.addChild(tutorial_button);
+		this.world.addUIElement(tutorial_button);
+
+		tutorial_button.setOnClick((e) -> {
+			if (onStartTutorial != null) {
+				onStartTutorial.accept(this);
+			}
+		});
 
 
 	}
