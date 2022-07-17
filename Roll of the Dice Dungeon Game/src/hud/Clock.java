@@ -37,7 +37,7 @@ public class Clock extends GameObject {
 
 		// Draw an arc representing the time left.
 		if(time_left / allotted_time > criticalThreshold) {
-			g2.setColor(Color.BLACK);
+			g2.setColor(Color.WHITE);
 		} else if(time_left % 0.5f < 0.25f) {
 			g2.setColor(Color.RED);
 		}
@@ -52,7 +52,7 @@ public class Clock extends GameObject {
 
 		// Draw an arc representing the time left.
 		if((time_left / allotted_time) > criticalThreshold) {
-			g2.setColor(Color.BLACK);
+			g2.setColor(Color.WHITE);
 		} else if(time_left % 0.5f < 0.25f){
 			g2.setColor(Color.RED);
 		}

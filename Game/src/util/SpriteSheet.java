@@ -3,7 +3,10 @@ package util;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -90,6 +93,59 @@ private static HashMap<String, SpriteSheet> sprite_sheets = new HashMap<>();
 		this.sprites_width = num_sprites;
 		this.sprites_height = 1;
 	}
+
+	public SpriteSheet(String folderName) {
+		URI uri = null;
+		try {
+			uri = this.getClass().getResource(folderName).toURI();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		//get each file in the folder as a url
+		File f = new File(uri);
+		File[] files = f.listFiles();
+		if(files == null)
+		{
+			System.err.println("Error: could not load image from folder: " + folderName);
+			System.exit(1);
+		}
+		images = new BufferedImage[files.length];
+		URL[] urls = new URL[files.length];
+		for(int i = 0; i < files.length; ++i)
+		{
+			try {
+				urls[i] = files[i].toURI().toURL();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		int j = 0;
+		for(URL url : urls){
+			BufferedImage temp;
+			try {
+				temp = ImageIO.read(url);
+			} catch (IOException e) {
+				temp = new BufferedImage(sprites_width, sprites_height, BufferedImage.TYPE_INT_ARGB);
+				System.err.println("Error: could not load image from file: " + url + ", created new image instead");
+				e.printStackTrace();
+			}
+			byte[] temp_px = ((DataBufferByte) temp.getRaster().getDataBuffer()).getData();
+			images[j] = new BufferedImage(temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			int[] px = ((DataBufferInt) images[j].getRaster().getDataBuffer()).getData();
+
+			for(int i = 0; i < px.length; ++i)
+			{
+				int col = (temp_px[i*4] << 24) + (temp_px[i*4+3] << 16) + (temp_px[i*4+2] << 8) + temp_px[i*4+1];
+				px[i] = col;
+			}
+			j++;
+		}
+
+		this.sprites_width = files.length;
+		this.sprites_height = 1;
+	}
+
 	public BufferedImage getSprite(int index)
 	{
 		return images[index];
@@ -101,6 +157,9 @@ private static HashMap<String, SpriteSheet> sprite_sheets = new HashMap<>();
 	public static void loadSpriteSheet(String name, String foldername, String prefix, int num_sprites)
 	{
 		sprite_sheets.put(name, new SpriteSheet(foldername, prefix, num_sprites));
+	}
+	public static void loadSpriteSheet(String name,String folderName){
+		sprite_sheets.put(name, new SpriteSheet(folderName));
 	}
 	public static void loadTileSet(String name, String filename, int sprites_width, int sprites_height)
 	{

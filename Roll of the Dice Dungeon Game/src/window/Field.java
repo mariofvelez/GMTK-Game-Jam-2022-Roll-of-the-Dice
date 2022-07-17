@@ -18,6 +18,7 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Scenes.TitleScreen;
 import environment.LevelGenerator;
 import environment.Tile;
 import geometry.Circle;
@@ -77,9 +78,10 @@ public class Field extends Canvas
 	Clock timer;
 	
 	LevelGenerator level_gen;
+
+	TitleScreen title_screen_scene;
 	
 	GameObject player;
-	int lives = 3;
 	Sprite player_sprite;
 	float player_z = 0;
 	float player_vz = 0;
@@ -107,24 +109,12 @@ public class Field extends Canvas
 		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
 		SpriteSheet.loadSpriteSheet("Tutorial", "/res/tutorial.png", 1, 1);
-		
-		title_screen = new GameWorld();
-		//background, graphics, buttons, graphics, foreground
-		title_screen.setDrawLayers(new int[] {5, 100, 100, 100, 100});
-		title_screen.setPosition(size.width/2f, size.height/2f);
-		title_screen.setScale(30, 30);
-		title_screen.physics_world.setGravity(0f, 0f);
-		
-		//FIXME - title for the game
-		UIText name_text = new UIText(new Font("Helvetica", 0, 3), "Filler Text");
-		name_text.setPosition(-6, 0);
-		title_screen.addChild(name_text);
-		
-		Shape2d play_shape = Polygon2d.createAsBox(new Vec2d(0, 4), new Vec2d(5, 2));
-		UIButton play_button = new UIButton(play_shape);
+		SpriteSheet.loadSpriteSheet("Felt", "/res/feltPixelArt.png", 1, 1);
+		SpriteSheet.loadSpriteSheet("Cards", "/res/cards");
 
-		title_screen.addChild(play_button);
-		title_screen.addUIElement(play_button);
+		title_screen = new GameWorld();
+
+		title_screen_scene = new TitleScreen(title_screen, size);
 		
 		
 		//Game scene
@@ -183,7 +173,7 @@ public class Field extends Canvas
 		
 		setActiveWorld(title_screen);
 
-		play_button.setOnClick((e) -> {
+		title_screen_scene.setOnStartGame((e) -> {
 			setActiveWorld(game);
 			timer.start();
 		});
@@ -197,11 +187,8 @@ public class Field extends Canvas
 		tutorial_sprite.setPosition(30, 50);
 		tutorial.addChild(tutorial_sprite);
 		
-		Shape2d tutorial_shape = Polygon2d.createAsBox(new Vec2d(-10, 4), new Vec2d(2.5f, 1));
-		UIButton tutorial_button = new UIButton(tutorial_shape);
-		title_screen.addChild(tutorial_button);
-		title_screen.addUIElement(tutorial_button);
-		tutorial_button.setOnClick((e) -> {
+
+		title_screen_scene.setOnStartTutorial((e) -> {
 			setActiveWorld(tutorial);
 		});
 		
@@ -242,7 +229,7 @@ public class Field extends Canvas
 		});
 
 	}
-	
+
 	public void setActiveWorld(GameWorld to_set)
 	{
 		this.removeMouseListener(curr);
