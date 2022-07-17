@@ -70,6 +70,7 @@ public class Field extends Canvas
 	GameWorld curr; //holds the current GameWorld that's active
 	GameWorld title_screen; //title screen scene
 	GameWorld game; //game scene
+	GameWorld tutorial;
 	
 	LevelGenerator level_gen;
 	
@@ -97,7 +98,7 @@ public class Field extends Canvas
 		SpriteSheet.loadSpriteSheet("Tiles", "/res/castle_tileset_full.png", 12, 4);
 		SpriteSheet.loadSpriteSheet("Player", "/res/player/dice", "die_", 6);
 		SpriteSheet.loadSpriteSheet("Shadow", "/res/shadow.png", 1, 1);
-		
+		SpriteSheet.loadSpriteSheet("Tutorial", "/res/tutorial.png", 1, 1);
 		
 		title_screen = new GameWorld();
 		//background, graphics, buttons, graphics, foreground
@@ -127,7 +128,7 @@ public class Field extends Canvas
 		game.setScale(45, -45);
 		
 		player = new GameObject();
-		player.setPosition(5, 5);
+		player.setPosition(-7.5f, 0);
 		game.addChild(player);
 		
 		player_sprite = new Sprite(SpriteSheet.getSpriteSheet("Player"), 0, 32);
@@ -162,6 +163,31 @@ public class Field extends Canvas
 		play_button.setOnClick((e) -> {
 			setActiveWorld(game);
 			timer.start();
+		});
+		
+		tutorial = new GameWorld();
+		tutorial.setScale(0.9f, 0.9f);
+		//just the image
+		tutorial.setDrawLayers(new int[] {5});
+		
+		Sprite tutorial_sprite = new Sprite(SpriteSheet.getSpriteSheet("Tutorial"), 0, 1);
+		tutorial_sprite.setPosition(30, 50);
+		tutorial.addChild(tutorial_sprite);
+		
+		Shape2d tutorial_shape = Polygon2d.createAsBox(new Vec2d(-10, 4), new Vec2d(2.5f, 1));
+		UIButton tutorial_button = new UIButton(tutorial_shape);
+		title_screen.addChild(tutorial_button);
+		title_screen.addUIElement(tutorial_button);
+		tutorial_button.setOnClick((e) -> {
+			setActiveWorld(tutorial);
+		});
+		
+		Shape2d tutorial_back_shape = Polygon2d.createAsBox(new Vec2d(50, 20), new Vec2d(40, 15));
+		UIButton tutorial_back_button = new UIButton(tutorial_back_shape);
+		tutorial.addChild(tutorial_back_button);
+		tutorial.addUIElement(tutorial_back_button);
+		tutorial_back_button.setOnClick((e) -> {
+			setActiveWorld(title_screen);
 		});
 	}
 	
