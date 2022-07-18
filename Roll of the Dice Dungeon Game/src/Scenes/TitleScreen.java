@@ -21,7 +21,7 @@ public class TitleScreen {
 
 	Consumer<TitleScreen> onStartGame, onStartTutorial;
 
-	Font titleFont;
+	public Font titleFont;
 
 	private Tile background;
 

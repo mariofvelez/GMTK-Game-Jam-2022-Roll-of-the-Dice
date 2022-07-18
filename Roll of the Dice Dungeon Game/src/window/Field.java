@@ -17,6 +17,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 import Scenes.TitleScreen;
@@ -100,6 +101,8 @@ public class Field extends Canvas
 	Vec2d restart_pos = sides[0];
 	int last_side = 0;
 	int max_roll = 2;
+	int curr_level = 1;
+	UIText level_text;
 	
 	public Field(Dimension size) throws Exception {
 		this.setPreferredSize(size);
@@ -177,7 +180,7 @@ public class Field extends Canvas
 		player_death.setLayer(1);
 		player.addChild(player_death);
 
-		timer = new Clock(30.0f, 30);
+		timer = new Clock(45.0f, 30);
 		timer.setPosition(size.width - 60, 50);
 		timer.setLayer(3);
 		timer.setOnTimeUp((e) -> {
@@ -185,6 +188,12 @@ public class Field extends Canvas
 			loseLife();
 		});
 		game.addChild(timer);
+		
+		level_text = new UIText(title_screen_scene.titleFont.deriveFont(1f), "Level: " + curr_level);
+		level_text.setPosition(-8f, 5f);
+		level_text.setScale(1, -1);
+		level_text.setLayer(3);
+		game.addChild(level_text);
 		
 		level_gen.generateLevel(2, -7.5f, -5, 15, 10);
 		this.setBackground(level_gen.tile_colors[safe_col]);
@@ -288,18 +297,21 @@ public class Field extends Canvas
 	
 	public void nextLevel()
 	{
+		curr_level++;
+		level_text.text = "Level: " + curr_level;
+		
 		timer.start();
 		
 		game.forEachID((obj) -> {
 			obj.delete();
 		}, 5);
 		
-		if(Math.random() < 0.3f)
+		if(Math.random() < 0.1f)
 			max_roll++;
 		if(max_roll > 6)
 			max_roll = 6;
 		
-		if(Math.random() < 0.2f)
+		if(Math.random() < 0.3f)
 			level_gen.tile_length++;
 		if(level_gen.tile_length > 5)
 			level_gen.tile_length = 5;
@@ -559,8 +571,6 @@ public class Field extends Canvas
 		{
 			
 		}
-		if(curr == game)
-		nextLevel();
 	}
 
 	@Override
