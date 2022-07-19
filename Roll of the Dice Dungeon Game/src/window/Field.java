@@ -257,7 +257,13 @@ public class Field extends Canvas
 					}
 					
 					setActiveWorld(title_screen);
-					health_bar.reset(5);					
+					health_bar.reset(5);
+					safe_col = 0;
+					last_side = 0;
+					max_roll = 2;
+					curr_level = 1;
+					level_text.text = "Level: 1";
+					level_gen.tile_length = 2;
 				}
 			});
 			after_die_thread.start();
